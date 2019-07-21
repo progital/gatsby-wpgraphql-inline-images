@@ -11,6 +11,10 @@
         "wordpress",
         "wpgraphql"
     ],
+    "repository": {
+      "type" : "git",
+      "url" : "https://github.com/progital/gatsby-wpgraphql-inline-images.git"
+    },
     "license": "MIT",
     "dependencies": {
         "@babel/runtime": "^7.0.0",
