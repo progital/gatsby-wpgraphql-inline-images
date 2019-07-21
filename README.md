@@ -5,14 +5,14 @@
 Source plugins don't process links and images in blocks of text which makes sourcing from CMS such as WordPress problematic. This plugin solves that for content sourced from WordPress using GraphQL by doing the following:
 
 - Downloads images and other files to Gatsby `static` folder
-- Replaces `<a>` linking to other pages with `<Link>` component
-- Replaces `<img>` with Gatsby `<Img>` component providing all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
+- Replaces `<a>` linking to site's pages with `<Link>` component
+- Replaces `<img>` with Gatsby `<Img>` component leveraging all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
 
 ### Dependencies
 
 This plugin processes WordPress content sourced with GraphQL. Therefore you must use `gatsby-source-graphql` and your source WordPress site must use [WPGraphQL](https://github.com/wp-graphql/wp-graphql).
 
-_Attention:_ doesn't work with `gatsby-source-wordpress`.
+_Attention:_ does not work with `gatsby-source-wordpress`.
 
 ## How to install
 
@@ -34,7 +34,7 @@ yarn add gatsby-wpgraphql-inline-images
 
 ## Available options
 
-`wordPressUrl` and `uploadsUrl` contain URLs of source WordPress site and it's uploads folder respectively.
+`wordPressUrl` and `uploadsUrl` contain URLs of the source WordPress site and it's `uploads` folder respectively.
 
 `processPostTypes` determines which post types to process. You can include [custom post types](https://docs.wpgraphql.com/getting-started/custom-post-types) as defined in WPGraphQL.
 
@@ -54,17 +54,32 @@ replace `<div dangerouslySetInnerHTML={{ __html: content }} />` with this
 <div>{contentParser({ content }, { wordPressUrl, uploadsUrl })}</div>
 ```
 
-Where `content` is the original HTML content. `contenParser` returns React object.
+Where `content` is the original HTML content and URLs should use the same values as in the options above. `contenParser` returns React object.
+
+### WordPress galleries
+
+WordPress galleries may need some additional styling applied and this was intentionally left out of the scope of this plugin. Emotion [Global Styles](https://emotion.sh/docs/globals) may be used or just import sass/css file.
+
+```css
+.gallery {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.gallery-item {
+  margin-right: 10px;
+}
+```
 
 ## Gatsby themes support
 
-Inserted <Img> components have `variant: 'styles.SourcedImage'` applied to them.
+Inserted `<Img>` components have `variant: 'styles.SourcedImage'` applied to them.
 
 ## Examples of usage
 
-We're going to use [gatsby-wpgraphql-blog-example](https://github.com/wp-graphql/gatsby-wpgraphql-blog-example) as starter. I've set up a demo site at [noh.progital.dev](https://noh.progital.dev/). It has `Event` custom post type set up as an example.
+I'm going to use [gatsby-wpgraphql-blog-example](https://github.com/wp-graphql/gatsby-wpgraphql-blog-example) as a starter and it will source data from my demo site at [noh.progital.dev](https://noh.progital.dev/).
 
-Add this plugin to your `gatsby-config.js`
+Add this plugin to the `gatsby-config.js`
 
 ```javascript
 {
@@ -72,28 +87,39 @@ Add this plugin to your `gatsby-config.js`
   options: {
     wordPressUrl: `https://noh.progital.dev/`,
     uploadsUrl: `https://noh.progital.dev/wp-content/uploads/`,
-    processPostTypes: ["Page", "Post", "Event"],
+    processPostTypes: ["Page", "Post"],
     graphqlTypeName: 'WPGraphQL',
   },
 },
 ```
 
-WordPress galleries need some additional styling applied and that was intentionally left out of the scope of this plugin
-```css
-.gallery {
-      display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-.gallery-item {
-  margin-right: 10px;
-}
+Change `url` in `gatsby-source-graphql` options to `https://noh.progital.dev/graphql`
+
+Page templates are stored in `src/templates`. Let's modify `post.js` as an example. 
+
+Importing `contentParser`
+```javascript
+import contentParser from "gatsby-wpgraphql-inline-images"
 ```
 
-Use the same settings for `gatsby-source-graphql`.
+For simplicty's sake I'm just going to add URLs directly in the template.
+```javascript
+const pluginOptions = {
+  wordPressUrl: `https://demo.wpgraphql.com/`,
+  uploadsUrl: `https://demo.wpgraphql.com/wp-content/uploads/`,
+}
+```
+and replace `dangerouslySetInnerHTML` with this
+```javascript
+<div>
+  {contentParser({ content }, pluginOptions)}
+</div>
+```
+
+The modified example starter is available at [github.com/progital/gatsby-wpgraphql-blog-example](https://github.com/progital/gatsby-wpgraphql-blog-example).
 
 ## How to contribute
 
-This is a WIP and any contribution, feedback or PRs are very welcome. Issues is a preferred way of submitting feedback, you can also email to [andrey@progital.io](mailto:andrey@progital.io).
+This is a WIP and any contribution, feedback and PRs are very welcome. Issues is a preferred way of submitting feedback, but you can also email to [andrey@progital.io](mailto:andrey@progital.io).
 
 While this plugin was designed for sourcing from WordPress it could be adapted for other use cases.
