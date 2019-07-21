@@ -1,7 +1,7 @@
 {
     "name": "gatsby-wpgraphql-inline-images",
     "description": "A Gatsby plugin to turn remote inline images into local static images",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "main": "index.js",
     "author": "Andrey Shalashov <andrey@progital.io>",
     "keywords": [
@@ -14,6 +14,8 @@
     "license": "MIT",
     "dependencies": {
         "@babel/runtime": "^7.0.0",
+        "@emotion/core": "^10.0.14",
+        "@mdx-js/react": "^1.0.27",
         "cheerio": "^1.0.0-rc.3",
         "gatsby": "^2.0.0",
         "gatsby-image": "^2.1.4",

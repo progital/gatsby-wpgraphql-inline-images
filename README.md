@@ -78,6 +78,18 @@ Add this plugin to your `gatsby-config.js`
 },
 ```
 
+WordPress galleries need some additional styling applied and that was intentionally left out of the scope of this plugin
+```css
+.gallery {
+      display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.gallery-item {
+  margin-right: 10px;
+}
+```
+
 Use the same settings for `gatsby-source-graphql`.
 
 ## How to contribute
