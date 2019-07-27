@@ -5,6 +5,7 @@
 Source plugins don't process links and images in blocks of text which makes sourcing from CMS such as WordPress problematic. This plugin solves that for content sourced from WordPress using GraphQL by doing the following:
 
 - Downloads images and other files to Gatsby `static` folder
+- Updates `featuredImage` fields with local urls
 - Replaces `<a>` linking to site's pages with `<Link>` component
 - Replaces `<img>` with Gatsby `<Img>` component leveraging all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
 
@@ -55,6 +56,19 @@ replace `<div dangerouslySetInnerHTML={{ __html: content }} />` with this
 ```
 
 Where `content` is the original HTML content and URLs should use the same values as in the options above. `contenParser` returns React object.
+
+### Featured image
+
+The plugin processes `featuredImage` but the current implementation is not ideal. `sourceUrl` is used to fetch the original so it should always be present in graphql query. Downloaded image is then optimized with [`fluid`](https://www.gatsbyjs.org/packages/gatsby-image/#fluid-queries) and these fields are updated: `sizes`, `srcSet`, `sourceUrl`. `content` contains stringified `fluid` object.
+
+```javascript
+featuredImage {
+  srcSet
+  sizes
+  sourceUrl
+  content
+}
+```
 
 ### WordPress galleries
 
