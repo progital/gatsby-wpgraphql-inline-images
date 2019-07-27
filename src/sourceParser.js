@@ -1,4 +1,4 @@
-const { createRemoteFileNode } = require('gatsby-source-filesystem');
+const downloadMediaFile = require(`./utils`).downloadMediaFile;
 const { fluid } = require(`gatsby-plugin-sharp`);
 const cheerio = require('cheerio');
 const URIParser = require('urijs');
@@ -179,8 +179,7 @@ module.exports = async function sourceParser(
           encoded: JSON.stringify(fluidResult),
         });
       } catch (e) {
-        console.log('Exception fluid');
-        console.log(e);
+        console.log('Exception fluid', e);
       }
 
       console.log(`downloaded image ${item.url}`);
@@ -216,25 +215,4 @@ module.exports = async function sourceParser(
   return $.html();
 };
 
-const downloadMediaFile = async ({
-  url,
-  cache,
-  store,
-  createNode,
-  createNodeId,
-}) => {
-  let fileNode = false;
-  try {
-    fileNode = await createRemoteFileNode({
-      url,
-      store,
-      cache,
-      createNode,
-      createNodeId,
-    });
-  } catch (e) {
-    console.log('FAILED to download ' + url);
-  }
 
-  return fileNode;
-};
