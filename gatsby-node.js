@@ -14,8 +14,11 @@ exports.createResolvers = async (params, pluginOptions) => {
   const {
     actions: { createNode },
   } = params;
-  const { processPostTypes = [] } = pluginOptions;
-  const { pathPrefix = '' } = pluginOptions;
+  const {
+    processPostTypes = [],
+    pathPrefix = '',
+    generateWebp = true,
+  } = pluginOptions;
 
   // `content` field Resolver
   // - passes content to sourceParser
@@ -96,7 +99,12 @@ exports.createResolvers = async (params, pluginOptions) => {
     let imageData;
 
     try {
-      imageData = await downloadImage(origUrl, params, pathPrefix);
+      imageData = await downloadImage(
+        origUrl,
+        params,
+        pathPrefix,
+        generateWebp
+      );
     } catch (e) {
       console.log('Exception featured image', e);
       return featuredImage;
@@ -146,5 +154,3 @@ exports.setFieldsOnGraphQLNodeType = ({ type }, pluginOptions) => {
 
 const findExistingNode = (uri, allNodes) =>
   allNodes.find(node => node.sourceUri === uri);
-
-

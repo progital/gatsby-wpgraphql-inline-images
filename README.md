@@ -41,6 +41,8 @@ yarn add gatsby-wpgraphql-inline-images
 
 `graphqlTypeName` should contain the same `typeName` used in `gatsby-source-graphql` parameters.
 
+`generateWebp` _(boolean)_ adds [WebP images](https://www.gatsbyjs.org/docs/gatsby-image/#about-withwebp).
+
 ## How do I use this plugin?
 
 Downloading and optimizing images is done automatically via resolvers. However there is an additional step of processing content that must be added manually to a page template.

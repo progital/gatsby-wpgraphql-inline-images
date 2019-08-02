@@ -34,7 +34,8 @@ const downloadImage = async (
     createNodeId,
     getNodeAndSavePathDependency,
   },
-  pathPrefix
+  pathPrefix,
+  generateWebp = true
 ) => {
   const { createNode } = actions;
   const imageOptions = {
@@ -56,9 +57,10 @@ const downloadImage = async (
     createNodeId,
   });
 
-  const fluidResult = await fluid({
-    file: fileNode,
-    args: imageOptions,
+  const fluidResult = await convertFileNodeToFluid({
+    generateWebp,
+    fileNode,
+    imageOptions,
     reporter,
     cache,
   });
@@ -66,5 +68,34 @@ const downloadImage = async (
   return fluidResult;
 };
 
+const convertFileNodeToFluid = async ({
+  generateWebp = true,
+  fileNode,
+  imageOptions,
+  reporter,
+  cache,
+}) => {
+  let fluidResult = await fluid({
+    file: fileNode,
+    args: imageOptions,
+    reporter,
+    cache,
+  });
+
+  if (generateWebp) {
+    const fluidWebp = await fluid({
+      file: fileNode,
+      args: { ...imageOptions, toFormat: 'webp' },
+      reporter,
+      cache,
+    });
+
+    fluidResult.srcSetWebp = fluidWebp.srcSet;
+  }
+
+  return fluidResult;
+};
+
 exports.downloadMediaFile = downloadMediaFile;
 exports.downloadImage = downloadImage;
+exports.convertFileNodeToFluid = convertFileNodeToFluid;

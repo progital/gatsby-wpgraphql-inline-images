@@ -1,5 +1,5 @@
 const downloadMediaFile = require(`./utils`).downloadMediaFile;
-const { fluid } = require(`gatsby-plugin-sharp`);
+const convertFileNodeToFluid = require(`./utils`).convertFileNodeToFluid;
 const cheerio = require('cheerio');
 const URIParser = require('urijs');
 const fs = require(`fs-extra`);
@@ -22,7 +22,7 @@ const path = require(`path`);
  */
 module.exports = async function sourceParser(
   { content },
-  { uploadsUrl, wordPressUrl, pathPrefix = '' },
+  { uploadsUrl, wordPressUrl, pathPrefix = '', generateWebp = true },
   params,
   context
 ) {
@@ -166,9 +166,10 @@ module.exports = async function sourceParser(
       }
 
       try {
-        const fluidResult = await fluid({
-          file: fileNode,
-          args: imageOptions,
+        const fluidResult = await convertFileNodeToFluid({
+          generateWebp,
+          fileNode,
+          imageOptions,
           reporter,
           cache,
         });
@@ -197,7 +198,6 @@ module.exports = async function sourceParser(
     $(item).attr('data-gts-encfluid', swapVal.encoded);
     $(item).removeAttr('srcset');
     $(item).removeAttr('sizes');
-    // delete item.attribs.srcset;
   });
 
   $('a').each((i, item) => {
