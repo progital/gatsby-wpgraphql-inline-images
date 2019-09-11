@@ -21,6 +21,10 @@ export default function contentParser(
   { content },
   { wordPressUrl, uploadsUrl }
 ) {
+  if (typeof content !== 'string') {
+    return content;
+  }
+
   const parserOptions = {
     replace: domNode => {
       let elementUrl =

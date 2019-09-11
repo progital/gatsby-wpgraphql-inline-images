@@ -27,6 +27,7 @@ build/Release
 node_modules
 *.un~
 yarn.lock
+package-lock.json
 flow-typed
 coverage
 decls
