@@ -21,6 +21,12 @@ export default function contentParser(
   { content },
   { wordPressUrl, uploadsUrl }
 ) {
+  if (typeof content === 'undefined') {
+    console.log(
+      'ERROR: contentParser requires content parameter to be string but got undefined.'
+    );
+  }
+
   if (typeof content !== 'string') {
     return content;
   }
