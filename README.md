@@ -60,7 +60,7 @@ Where `content` is the original HTML content and URLs should use the same values
 
 ### Featured image
 
-The recommended handling of featuredImage is described by [henrikwirth](https://github.com/henrikwirth) in [this article](https://dev.to/nevernull/gatsby-with-wpgraphql-acf-and-gatbsy-image-72m) and [this gist](https://gist.github.com/henrikwirth/4ba900b7f89b9e28ec81497466b12710).
+The recommended handling of `featuredImage` and WordPress media in general is described by [henrikwirth](https://github.com/henrikwirth) in [this article](https://dev.to/nevernull/gatsby-with-wpgraphql-acf-and-gatbsy-image-72m) and [this gist](https://gist.github.com/henrikwirth/4ba900b7f89b9e28ec81497466b12710).
 
 ### WordPress galleries
 
