@@ -2,10 +2,9 @@
 
 ## Description
 
-Source plugins don't process links and images in blocks of text which makes sourcing from CMS such as WordPress problematic. This plugin solves that for content sourced from WordPress using GraphQL by doing the following:
+Source plugins don't process links and images in blocks of text (i.e. post contents) which makes sourcing from CMS such as WordPress problematic. This plugin solves that for content sourced from WordPress using GraphQL by doing the following:
 
 - Downloads images and other files to Gatsby `static` folder
-- Updates `featuredImage` fields with local urls
 - Replaces `<a>` linking to site's pages with `<Link>` component
 - Replaces `<img>` with Gatsby `<Img>` component leveraging all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
 
@@ -45,7 +44,7 @@ yarn add gatsby-wpgraphql-inline-images
 
 ## How do I use this plugin?
 
-Downloading and optimizing images is done automatically via resolvers. However there is an additional step of processing content that must be added manually to a page template.
+Downloading and optimizing images is done automatically via resolvers. However there is an additional step of processing content that must be added manually to a page template. This additional processing replaces remote urls with links to downloaded files in Gatsby's static folder.
 
 ```javascript
 import contentParser from 'gatsby-wpgraphql-inline-images';
@@ -61,16 +60,7 @@ Where `content` is the original HTML content and URLs should use the same values
 
 ### Featured image
 
-The plugin processes `featuredImage` but the current implementation is not ideal. `sourceUrl` is used to fetch the original so it should always be present in graphql query. Downloaded image is then optimized with [`fluid`](https://www.gatsbyjs.org/packages/gatsby-image/#fluid-queries) and these fields are updated: `sizes`, `srcSet`, `sourceUrl`. `content` contains stringified `fluid` object.
-
-```javascript
-featuredImage {
-  srcSet
-  sizes
-  sourceUrl
-  content
-}
-```
+The recommended handling of featuredImage is described by [henrikwirth](https://github.com/henrikwirth) in [this article](https://dev.to/nevernull/gatsby-with-wpgraphql-acf-and-gatbsy-image-72m) and [this gist](https://gist.github.com/henrikwirth/4ba900b7f89b9e28ec81497466b12710).
 
 ### WordPress galleries
 
@@ -93,7 +83,7 @@ Inserted `<Img>` components have `variant: 'styles.SourcedImage'` applied to the
 
 ## Examples of usage
 
-I'm going to use [gatsby-wpgraphql-blog-example](https://github.com/wp-graphql/gatsby-wpgraphql-blog-example) as a starter and it will source data from my demo site at [noh.progital.dev](https://noh.progital.dev/).
+I'm going to use [gatsby-wpgraphql-blog-example](https://github.com/wp-graphql/gatsby-wpgraphql-blog-example) as a starter and it will source data from a demo site at [yourdomain.dev](https://yourdomain.dev/).
 
 Add this plugin to the `gatsby-config.js`
 
@@ -101,15 +91,15 @@ Add this plugin to the `gatsby-config.js`
 {
   resolve: 'gatsby-wpgraphql-inline-images',
   options: {
-    wordPressUrl: `https://noh.progital.dev/`,
-    uploadsUrl: `https://noh.progital.dev/wp-content/uploads/`,
+    wordPressUrl: `https://yourdomain.dev/`,
+    uploadsUrl: `https://yourdomain.dev/wp-content/uploads/`,
     processPostTypes: ["Page", "Post"],
     graphqlTypeName: 'WPGraphQL',
   },
 },
 ```
 
-Change `url` in `gatsby-source-graphql` options to `https://noh.progital.dev/graphql`
+Change `url` in `gatsby-source-graphql` options to `https://yourdomain.dev/graphql`
 
 Page templates are stored in `src/templates`. Let's modify `post.js` as an example. 
 
@@ -121,8 +111,8 @@ import contentParser from "gatsby-wpgraphql-inline-images"
 For simplicty's sake I'm just going to add URLs directly in the template.
 ```javascript
 const pluginOptions = {
-  wordPressUrl: `https://demo.wpgraphql.com/`,
-  uploadsUrl: `https://demo.wpgraphql.com/wp-content/uploads/`,
+  wordPressUrl: `https://yourdomain.dev/`,
+  uploadsUrl: `https://yourdomain.dev/wp-content/uploads/`,
 }
 ```
 and replace `dangerouslySetInnerHTML` with this
