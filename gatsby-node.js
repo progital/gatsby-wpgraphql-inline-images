@@ -1,6 +1,5 @@
-const { GraphQLString } = require(`gatsby/graphql`);
-const sourceParser = require(`./src/sourceParser`);
-const downloadImage = require(`./src/utils`).downloadImage;
+const { GraphQLString } = require('gatsby/graphql');
+const sourceParser = require('./src/sourceParser');
 
 // parses content sourced from WordPress/WPGraphQL
 exports.createResolvers = async (params, pluginOptions) => {
@@ -14,11 +13,7 @@ exports.createResolvers = async (params, pluginOptions) => {
   const {
     actions: { createNode },
   } = params;
-  const {
-    processPostTypes = [],
-    pathPrefix = '',
-    generateWebp = true,
-  } = pluginOptions;
+  const { processPostTypes = [] } = pluginOptions;
 
   // `content` field Resolver
   // - passes content to sourceParser
@@ -74,63 +69,11 @@ exports.createResolvers = async (params, pluginOptions) => {
     return parsedContent;
   };
 
-  // caching all featured images local src and srcSet
-  const featuredCache = new Map();
-
-  // featuredImage: { sourceUrl, srcSet }
-  const featuredImageResolver = async (source, args, context, info) => {
-    if (!source.featuredImage || !source.featuredImage.sourceUrl) {
-      return source.featuredImage;
-    }
-
-    const origUrl = source.featuredImage.sourceUrl;
-    const cached = featuredCache.get(origUrl);
-    const featuredImage = source.featuredImage;
-
-    if (cached) {
-      featuredImage.sourceUrl = cached.src;
-      featuredImage.content = cached.fluidEncoded;
-      featuredImage.srcSet && (featuredImage.srcSet = cached.srcSet);
-      featuredImage.sizes && (featuredImage.sizes = cached.sizes);
-
-      return featuredImage;
-    }
-
-    let imageData;
-
-    try {
-      imageData = await downloadImage(
-        origUrl,
-        params,
-        pathPrefix,
-        generateWebp
-      );
-    } catch (e) {
-      console.log('Exception featured image', e);
-      return featuredImage;
-    }
-
-    // hacky way of passing `fluid` object forward
-    imageData.fluidEncoded = JSON.stringify(imageData);
-    featuredCache.set(origUrl, imageData);
-    featuredImage.sourceUrl = imageData.src;
-    // content is not used (null) for featuredImage
-    featuredImage.content = imageData.fluidEncoded;
-    featuredImage.srcSet && (featuredImage.srcSet = imageData.srcSet);
-    featuredImage.sizes && (featuredImage.sizes = imageData.sizes);
-    console.log(`downloaded featured image ${origUrl}`);
-
-    return featuredImage;
-  };
-
   processPostTypes.forEach(element => {
     let params = {};
     params[`${pluginOptions.graphqlTypeName}_${element}`] = {
       content: {
         resolve: contentResolver,
-      },
-      featuredImage: {
-        resolve: featuredImageResolver,
       },
     };
     createResolvers(params);
@@ -140,7 +83,7 @@ exports.createResolvers = async (params, pluginOptions) => {
 // adds `originalSourceUrl` field that contains original URL
 // for future extensions, not used at the moment
 exports.setFieldsOnGraphQLNodeType = ({ type }, pluginOptions) => {
-  if (type.name !== `File`) {
+  if (type.name !== 'File') {
     return {};
   }
 
