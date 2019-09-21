@@ -28,6 +28,9 @@ yarn add gatsby-wpgraphql-inline-images
     uploadsUrl: 'https://mydomain.com/wp-content/uploads/',
     processPostTypes: ['Page', 'Post', 'CustomPost'],
     graphqlTypeName: 'WPGraphQL',
+    httpHeaders: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+    }
   },
 },
 ```
@@ -41,6 +44,8 @@ yarn add gatsby-wpgraphql-inline-images
 `graphqlTypeName` should contain the same `typeName` used in `gatsby-source-graphql` parameters.
 
 `generateWebp` _(boolean)_ adds [WebP images](https://www.gatsbyjs.org/docs/gatsby-image/#about-withwebp).
+
+`httpHeaders` Adds extra http headers to download request if passed in.
 
 ## How do I use this plugin?
 
@@ -101,25 +106,27 @@ Add this plugin to the `gatsby-config.js`
 
 Change `url` in `gatsby-source-graphql` options to `https://yourdomain.dev/graphql`
 
-Page templates are stored in `src/templates`. Let's modify `post.js` as an example. 
+Page templates are stored in `src/templates`. Let's modify `post.js` as an example.
 
 Importing `contentParser`
+
 ```javascript
-import contentParser from "gatsby-wpgraphql-inline-images"
+import contentParser from 'gatsby-wpgraphql-inline-images';
 ```
 
 For simplicty's sake I'm just going to add URLs directly in the template.
+
 ```javascript
 const pluginOptions = {
   wordPressUrl: `https://yourdomain.dev/`,
   uploadsUrl: `https://yourdomain.dev/wp-content/uploads/`,
-}
+};
 ```
+
 and replace `dangerouslySetInnerHTML` with this
+
 ```javascript
-<div>
-  {contentParser({ content }, pluginOptions)}
-</div>
+<div>{contentParser({ content }, pluginOptions)}</div>
 ```
 
 The modified example starter is available at [github.com/progital/gatsby-wpgraphql-blog-example](https://github.com/progital/gatsby-wpgraphql-blog-example).

@@ -7,6 +7,7 @@ const downloadMediaFile = async ({
   store,
   createNode,
   createNodeId,
+  httpHeaders = {},
 }) => {
   let fileNode = false;
   try {
@@ -16,6 +17,7 @@ const downloadMediaFile = async ({
       cache,
       createNode,
       createNodeId,
+      httpHeaders,
     });
   } catch (e) {
     console.log('FAILED to download ' + url);
@@ -35,7 +37,8 @@ const downloadImage = async (
     getNodeAndSavePathDependency,
   },
   pathPrefix,
-  generateWebp = true
+  generateWebp = true,
+  httpHeaders = {}
 ) => {
   const { createNode } = actions;
   const imageOptions = {
@@ -55,6 +58,7 @@ const downloadImage = async (
     store,
     createNode,
     createNodeId,
+    httpHeaders,
   });
 
   const fluidResult = await convertFileNodeToFluid({
