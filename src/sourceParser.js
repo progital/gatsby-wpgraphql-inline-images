@@ -12,9 +12,11 @@ const path = require(`path`);
  * Also does additional processing to "fix" WordPress content
  * - unwraps <p> that contain <img>
  * @param  {string} content               original sourced content
- * @param  {string} uploadsUrl            wordpress uploads url
- * @param  {string} wordPressUrl          wordpress site url
+ * @param  {string} uploadsUrl            WordPress uploads url
+ * @param  {string} wordPressUrl          WordPress site url
  * @param  {string} pathPrefix            Gatsby pathPrefix
+ * @param  {bool}   generateWebp          is WebP required?
+ * @param  {object} httpHeaders           custom httpHeaders
  * @param  {object} params                Gatsby API object
  * @return {string}                       processed HTML
  *
@@ -22,7 +24,13 @@ const path = require(`path`);
  */
 module.exports = async function sourceParser(
   { content },
-  { uploadsUrl, wordPressUrl, pathPrefix = '', generateWebp = true },
+  {
+    uploadsUrl,
+    wordPressUrl,
+    pathPrefix = '',
+    generateWebp = true,
+    httpHeaders = {},
+  },
   params,
   context
 ) {
@@ -150,6 +158,7 @@ module.exports = async function sourceParser(
         store,
         createNode,
         createNodeId,
+        httpHeaders,
       });
 
       // non-image files are copied to the `/static` folder
@@ -214,5 +223,3 @@ module.exports = async function sourceParser(
 
   return $.html();
 };
-
-
