@@ -90,6 +90,7 @@ export default function contentParser(
         getByPath(domNode, 'attribs[data-gts-encfluid]', null);
 
       if (fluidData) {
+        console.log('fluidData ', fluidData);
         const fluidDataParsed = JSON.parse(fluidData);
 
         let altText = getByPath(domNode, 'attribs.alt', '');

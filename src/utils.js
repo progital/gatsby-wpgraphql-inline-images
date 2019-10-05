@@ -100,6 +100,11 @@ const convertFileNodeToFluid = async ({
   return fluidResult;
 };
 
+const debugLog = (debugOutput, ...args) => {
+  debugOutput && console.log(...args);
+};
+
 exports.downloadMediaFile = downloadMediaFile;
 exports.downloadImage = downloadImage;
 exports.convertFileNodeToFluid = convertFileNodeToFluid;
+exports.debugLog = debugLog;

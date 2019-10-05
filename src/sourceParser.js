@@ -22,6 +22,7 @@ const path = require(`path`);
  *
  * sourceParser(source, pluginOptions, params)
  */
+
 module.exports = async function sourceParser(
   { content },
   {
@@ -30,6 +31,7 @@ module.exports = async function sourceParser(
     pathPrefix = '',
     generateWebp = true,
     httpHeaders = {},
+    debugOutput = false,
   },
   params,
   context
