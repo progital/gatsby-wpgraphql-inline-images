@@ -72,7 +72,7 @@ module.exports = async function sourceParser(
     return `${pathPrefix}/static/${fileName}`;
   };
 
-  const $ = cheerio.load(content, { xmlMode: true });
+  const $ = cheerio.load(content, { xmlMode: true, decodeEntities: false });
 
   let imageRefs = [];
   let pRefs = [];
@@ -206,7 +206,7 @@ module.exports = async function sourceParser(
     }
 
     $(item).attr('src', swapVal.src);
-    $(item).attr('data-gts-encfluid', swapVal.encoded);
+    $(item).attr('data-gts-encfluid', swapVal.encoded.replace(/"/g, '&quot;'));
     $(item).removeAttr('srcset');
     $(item).removeAttr('sizes');
   });
