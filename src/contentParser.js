@@ -31,6 +31,13 @@ export default function contentParser(
     return content;
   }
 
+  const subdirectoryCorrection = (path, wordPressUrl) => {
+    const wordPressUrlParsed = new URIParser(wordPressUrl);
+    // detect if WordPress is installed in subdirectory
+    const subdir = wordPressUrlParsed.path();
+    return path.replace(subdir, '/');
+  };
+
   const parserOptions = {
     replace: domNode => {
       let elementUrl =
@@ -72,6 +79,7 @@ export default function contentParser(
         !elementUrlNoProtocol.includes(uploadsUrlNoProtocol)
       ) {
         let url = urlParsed.path();
+        url = subdirectoryCorrection(url, wordPressUrl);
         return (
           <Styled.a as={Link} to={url} className={className}>
             {domToReact(domNode.children, parserOptions)}
