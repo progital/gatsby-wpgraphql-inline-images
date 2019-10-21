@@ -31,21 +31,11 @@ export default function contentParser(
     return content;
   }
 
-  const subdirectoryCorrection = path => {
+  const subdirectoryCorrection = (path, wordPressUrl) => {
     const wordPressUrlParsed = new URIParser(wordPressUrl);
     // detect if WordPress is installed in subdirectory
-    const subdirectoryRegex = new RegExp(
-      `^https?:\/\/${wordPressUrlParsed.hostname()}(\/.*[^\/])\/?$`,
-      'i'
-    );
-    const match = wordPressUrl.match(subdirectoryRegex);
-    if (!match) {
-      return path;
-    }
-    const subdirectory = match[1];
-    //remove subdirectory from the beginning of the path
-    const regex = new RegExp(`^${subdirectory}`);
-    return path.replace(regex, '');
+    const subdir = wordPressUrlParsed.path();
+    return path.replace(subdir, '/');
   };
 
   const parserOptions = {
@@ -89,7 +79,7 @@ export default function contentParser(
         !elementUrlNoProtocol.includes(uploadsUrlNoProtocol)
       ) {
         let url = urlParsed.path();
-        url = subdirectoryCorrection(url);
+        url = subdirectoryCorrection(url, wordPressUrl);
         return (
           <Styled.a as={Link} to={url} className={className}>
             {domToReact(domNode.children, parserOptions)}
