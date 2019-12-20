@@ -107,25 +107,32 @@ module.exports = async function sourceParser(
       url = urlParsed.absoluteTo(wordPressUrl).href();
     }
 
-    imageRefs.push({
-      url,
-      urlKey,
-      name: item.name,
-      elem: $(item),
-    });
+    if( !imageRefs.some(({url: storedUrl}) => storedUrl === url )) {
 
-    // wordpress wpautop wraps <img> with <p>
-    // this causes react console message when replacing <img> with <Img> component
-    // code below unwraps <img> and removes parent <p>
-    if (item.name === 'img') {
-      $(item)
-        .parents('p')
-        .each(function(index, element) {
-          pRefs.push($(element));
-          $(element)
-            .contents()
-            .insertAfter($(element));
-        });
+      //console.log('found image:' , url);
+
+      imageRefs.push({
+        url,
+        urlKey,
+        name: item.name,
+        elem: $(item),
+      });
+
+      // wordpress wpautop wraps <img> with <p>
+      // this causes react console message when replacing <img> with <Img> component
+      // code below unwraps <img> and removes parent <p>
+      if (item.name === 'img') {
+        $(item)
+          .parents('p')
+          .each(function(index, element) {
+            pRefs.push($(element));
+            $(element)
+              .contents()
+              .insertAfter($(element));
+          });
+      }
+    } else {
+      //console.log('found image (again):' , url);
     }
   });
 
@@ -172,7 +179,7 @@ module.exports = async function sourceParser(
           id: fileNode.id,
         });
 
-        console.log(`downloaded file ${item.url}`);
+        console.log(`Downloaded file: ${item.url}`);
         return;
       }
 
@@ -194,7 +201,7 @@ module.exports = async function sourceParser(
         console.log('Exception fluid', e);
       }
 
-      console.log(`downloaded image ${item.url}`);
+      console.log(`Downloaded file:`, item.url);
     })
   );
 
@@ -205,6 +212,7 @@ module.exports = async function sourceParser(
       return;
     }
 
+    //console.log('swapping src',$(item).attr('src'), '=>', swapVal.src)
     $(item).attr('src', swapVal.src);
     $(item).attr('data-gts-encfluid', swapVal.encoded.replace(/"/g, '&quot;'));
     $(item).removeAttr('srcset');
@@ -218,6 +226,7 @@ module.exports = async function sourceParser(
       return;
     }
 
+    //console.log('swapping href',$(item).attr('src'), '=>', swapVal.src)
     $(item).attr('href', swapVal.src);
     // prevents converting to <Link> in contentParser
     $(item).attr('data-gts-swapped-href', 'gts-swapped-href');
