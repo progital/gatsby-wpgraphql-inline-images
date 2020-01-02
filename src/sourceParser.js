@@ -1,9 +1,11 @@
-const downloadMediaFile = require(`./utils`).downloadMediaFile;
-const convertFileNodeToFluid = require(`./utils`).convertFileNodeToFluid;
+const {
+  downloadMediaFile,
+  convertFileNodeToFluid,
+  copyToStatic,
+} = require(`./utils`);
 const cheerio = require('cheerio');
 const URIParser = require('urijs');
-const fs = require(`fs-extra`);
-const path = require(`path`);
+const getPluginValues = require(`./plugin-values`);
 
 /**
  * Parses sourced HTML looking for <img> and <a> tags
@@ -17,7 +19,9 @@ const path = require(`path`);
  * @param  {string} pathPrefix            Gatsby pathPrefix
  * @param  {bool}   generateWebp          is WebP required?
  * @param  {object} httpHeaders           custom httpHeaders
+ * @param  {bool}   debugOutput           enables extra logging
  * @param  {object} params                Gatsby API object
+ *
  * @return {string}                       processed HTML
  *
  * sourceParser(source, pluginOptions, params)
@@ -46,31 +50,11 @@ module.exports = async function sourceParser(
   } = params;
   const { createNode } = actions;
 
+  const { imageOptions, supportedExtensions } = getPluginValues(pathPrefix);
+
   if (!content) {
     return '';
   }
-
-  // source: gatsby-source-filesystem/src/extend-file-node.js
-  // copies file to the `/static` folder
-  const copyToStatic = file => {
-    const details = getNodeAndSavePathDependency(file.id, context.path);
-    const fileName = `${file.name}-${file.internal.contentDigest}${details.ext}`;
-
-    const publicPath = path.join(process.cwd(), `public`, `static`, fileName);
-
-    if (!fs.existsSync(publicPath)) {
-      fs.copy(details.absolutePath, publicPath, err => {
-        if (err) {
-          console.error(
-            `error copying file from ${details.absolutePath} to ${publicPath}`,
-            err
-          );
-        }
-      });
-    }
-
-    return `${pathPrefix}/static/${fileName}`;
-  };
 
   const $ = cheerio.load(content, { xmlMode: true, decodeEntities: false });
 
@@ -132,26 +116,6 @@ module.exports = async function sourceParser(
   // deletes <p> elements
   pRefs.forEach(elem => elem.remove());
 
-  const imageOptions = {
-    maxWidth: 1380,
-    wrapperStyle: ``,
-    backgroundColor: `white`,
-    linkImagesToOriginal: false,
-    showCaptions: false,
-    withWebp: true,
-    tracedSVG: false,
-    pathPrefix,
-  };
-
-  const supportedExtensions = {
-    jpeg: true,
-    jpg: true,
-    png: true,
-    webp: true,
-    tif: true,
-    tiff: true,
-  };
-
   await Promise.all(
     imageRefs.map(async item => {
       const fileNode = await downloadMediaFile({
@@ -165,7 +129,12 @@ module.exports = async function sourceParser(
 
       // non-image files are copied to the `/static` folder
       if (!supportedExtensions[fileNode.extension]) {
-        let staticFile = copyToStatic(fileNode);
+        let staticFile = copyToStatic({
+          file: fileNode,
+          getNodeAndSavePathDependency,
+          context,
+          pathPrefix,
+        });
 
         swapSrc.set(item.urlKey, {
           src: staticFile,
@@ -206,7 +175,12 @@ module.exports = async function sourceParser(
     }
 
     $(item).attr('src', swapVal.src);
-    $(item).attr('data-gts-encfluid', swapVal.encoded.replace(/"/g, '&quot;'));
+    if (swapVal.encoded) {
+      $(item).attr(
+        'data-gts-encfluid',
+        swapVal.encoded.replace(/"/g, '&quot;')
+      );
+    }
     $(item).removeAttr('srcset');
     $(item).removeAttr('sizes');
   });
