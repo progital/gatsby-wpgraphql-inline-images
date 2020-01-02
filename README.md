@@ -8,6 +8,8 @@ Source plugins don't process links and images in blocks of text (i.e. post conte
 - Replaces `<a>` linking to site's pages with `<Link>` component
 - Replaces `<img>` with Gatsby `<Img>` component leveraging all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
 
+A [major update](https://github.com/gatsbyjs/gatsby/issues/19292) is in the works for the WordPress source plugin and WPGraphQL. This plugin will be radically changed or even become redundant after V4 is completed. 
+
 ### Dependencies
 
 This plugin processes WordPress content sourced with GraphQL. Therefore you must use `gatsby-source-graphql` and your source WordPress site must use [WPGraphQL](https://github.com/wp-graphql/wp-graphql).
@@ -47,9 +49,25 @@ yarn add gatsby-wpgraphql-inline-images
 
 `httpHeaders` Adds extra http headers to download request if passed in.
 
+`debugOutput` _(boolean)_ Outputs extra debug messages.
+
 ## How do I use this plugin?
 
-Downloading and optimizing images is done automatically via resolvers. However there is an additional step of processing content that must be added manually to a page template. This additional processing replaces remote urls with links to downloaded files in Gatsby's static folder.
+Downloading and optimizing images is done automatically via resolvers. You need to include `uri` in all queries that will be processed by the plugin otherwise they will be ignored.
+
+```
+query GET_PAGES {
+  wpgraphql {
+    pages {
+      nodes {
+        uri
+      }
+    }
+  }
+}
+```
+
+There is an additional step of processing content that must be added manually to a page template. This additional processing replaces remote urls with links to downloaded files in Gatsby's static folder.
 
 ```javascript
 import contentParser from 'gatsby-wpgraphql-inline-images';
@@ -134,5 +152,3 @@ The modified example starter is available at [github.com/progital/gatsby-wpgraph
 ## How to contribute
 
 This is a WIP and any contribution, feedback and PRs are very welcome. Issues is a preferred way of submitting feedback, but you can also email to [andrey@progital.io](mailto:andrey@progital.io).
-
-While this plugin was designed for sourcing from WordPress it could be adapted for other use cases.
