@@ -61,6 +61,7 @@ query GET_PAGES {
     pages {
       nodes {
         uri
+        content
       }
     }
   }
