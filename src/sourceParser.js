@@ -91,32 +91,32 @@ module.exports = async function sourceParser(
       url = urlParsed.absoluteTo(wordPressUrl).href();
     }
 
-    if( !imageRefs.some(({url: storedUrl}) => storedUrl === url )) {
+    if (imageRefs.some(({ url: storedUrl }) => storedUrl === url)) {
+      // console.log('found image (again):' , url);
+      return;
+    }
 
-      //console.log('found image:' , url);
+    // console.log('found image:' , url);
 
-      imageRefs.push({
-        url,
-        urlKey,
-        name: item.name,
-        elem: $(item),
-      });
+    imageRefs.push({
+      url,
+      urlKey,
+      name: item.name,
+      elem: $(item),
+    });
 
-      // wordpress wpautop wraps <img> with <p>
-      // this causes react console message when replacing <img> with <Img> component
-      // code below unwraps <img> and removes parent <p>
-      if (item.name === 'img') {
-        $(item)
-          .parents('p')
-          .each(function(index, element) {
-            pRefs.push($(element));
-            $(element)
-              .contents()
-              .insertAfter($(element));
-          });
-      }
-    } else {
-      //console.log('found image (again):' , url);
+    // wordpress wpautop wraps <img> with <p>
+    // this causes react console message when replacing <img> with <Img> component
+    // code below unwraps <img> and removes parent <p>
+    if (item.name === 'img') {
+      $(item)
+        .parents('p')
+        .each(function(index, element) {
+          pRefs.push($(element));
+          $(element)
+            .contents()
+            .insertAfter($(element));
+        });
     }
   });
 
@@ -181,7 +181,7 @@ module.exports = async function sourceParser(
       return;
     }
 
-    //console.log('swapping src',$(item).attr('src'), '=>', swapVal.src)
+    // console.log('swapping src',$(item).attr('src'), '=>', swapVal.src)
     $(item).attr('src', swapVal.src);
     if (swapVal.encoded) {
       $(item).attr(
@@ -200,7 +200,7 @@ module.exports = async function sourceParser(
       return;
     }
 
-    //console.log('swapping href',$(item).attr('src'), '=>', swapVal.src)
+    // console.log('swapping href',$(item).attr('src'), '=>', swapVal.src)
     $(item).attr('href', swapVal.src);
     // prevents converting to <Link> in contentParser
     $(item).attr('data-gts-swapped-href', 'gts-swapped-href');

@@ -37,18 +37,18 @@ module.exports = async function createResolvers(params, pluginOptions) {
       return source.content;
     }
 
-    if (postsBeingParsed.indexOf(uri) === -1) {
-      postsBeingParsed.push(uri)
-    } else {
-      logger('node is already being parsed:', uri)
+    if (postsBeingParsed.indexOf(uri) !== -1) {
+      logger('node is already being parsed:', uri);
       return source.content;
     }
+
+    postsBeingParsed.push(uri);
 
     // if a node with a given URI exists
     const cached = findExistingNode(uri, getNodesByType(contentNodeType));
     // returns content from that node
     if (cached) {
-      logger('node already created:', uri)
+      logger('node already created:', uri);
       return cached.parsedContent;
     }
 
