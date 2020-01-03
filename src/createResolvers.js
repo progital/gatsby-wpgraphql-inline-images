@@ -4,7 +4,7 @@ const debugLog = require('./utils').debugLog;
 const findExistingNode = (uri, allNodes) =>
   allNodes.find(node => node.sourceUri === uri);
 
-const postsBeingParsed = [];
+const postsBeingParsed = new Map();
 
 module.exports = async function createResolvers(params, pluginOptions) {
   const contentNodeType = 'ParsedWordPressContent';
@@ -33,16 +33,11 @@ module.exports = async function createResolvers(params, pluginOptions) {
     let parsedContent = '';
     logger('Entered contentResolver @', uri || 'URI not defined, skipping');
 
+    // uri works as a key for caching/processing functions
+    // bails if no uri
     if (!uri) {
       return source.content;
     }
-
-    if (postsBeingParsed.indexOf(uri) !== -1) {
-      logger('node is already being parsed:', uri);
-      return source.content;
-    }
-
-    postsBeingParsed.push(uri);
 
     // if a node with a given URI exists
     const cached = findExistingNode(uri, getNodesByType(contentNodeType));
@@ -52,44 +47,56 @@ module.exports = async function createResolvers(params, pluginOptions) {
       return cached.parsedContent;
     }
 
-    try {
-      logger('will start parsing:', uri);
-      parsedContent = await sourceParser(
-        source,
-        pluginOptions,
-        params,
-        context
-      );
-    } catch (e) {
-      console.log(`Failed sourceParser at ${uri}`, e);
-      return source.content;
+    // returns promise
+    if (postsBeingParsed.has(uri)) {
+      logger('node is already being parsed:', uri);
+      return postsBeingParsed.get(uri);
     }
 
-    logger(`[ORIGINAL CONTENT @ ${uri}]`, source.content);
-    logger(`[PARSED CONTENT @ ${uri}]`, parsedContent);
+    const parsing = (async () => {
+      try {
+        logger('will start parsing:', uri);
+        parsedContent = await sourceParser(
+          source,
+          pluginOptions,
+          params,
+          context
+        );
+      } catch (e) {
+        console.log(`Failed sourceParser at ${uri}`, e);
+        return source.content;
+      }
 
-    let payload = {
-      parsedContent,
-      sourceId: source.id,
-      sourceUri: source.uri,
-      sourcePageId: source.pageId,
-    };
+      logger(`[ORIGINAL CONTENT @ ${uri}]`, source.content);
+      logger(`[PARSED CONTENT @ ${uri}]`, parsedContent);
 
-    let node = {
-      ...payload,
-      id: createNodeId(source.uri, contentNodeType),
-      children: [],
-      parent: null,
-      internal: {
-        type: contentNodeType,
-        contentDigest: createContentDigest(payload),
-      },
-    };
+      let payload = {
+        parsedContent,
+        sourceId: source.id,
+        sourceUri: source.uri,
+        sourcePageId: source.pageId,
+      };
 
-    logger('done parsing, creating node:', uri);
-    await createNode(node);
+      let node = {
+        ...payload,
+        id: createNodeId(source.uri, contentNodeType),
+        children: [],
+        parent: null,
+        internal: {
+          type: contentNodeType,
+          contentDigest: createContentDigest(payload),
+        },
+      };
 
-    return parsedContent;
+      logger('done parsing, creating node:', uri);
+      await createNode(node);
+
+      return parsedContent;
+    })();
+
+    postsBeingParsed.set(uri, parsing);
+
+    return parsing;
   };
 
   processPostTypes.forEach(element => {
