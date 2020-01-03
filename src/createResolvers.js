@@ -4,6 +4,8 @@ const debugLog = require('./utils').debugLog;
 const findExistingNode = (uri, allNodes) =>
   allNodes.find(node => node.sourceUri === uri);
 
+const postsBeingParsed = [];
+
 module.exports = async function createResolvers(params, pluginOptions) {
   const contentNodeType = 'ParsedWordPressContent';
   const {
@@ -35,14 +37,23 @@ module.exports = async function createResolvers(params, pluginOptions) {
       return source.content;
     }
 
+    if (postsBeingParsed.indexOf(uri) === -1) {
+      postsBeingParsed.push(uri)
+    } else {
+      logger('node is already being parsed:', uri)
+      return source.content;
+    }
+
     // if a node with a given URI exists
     const cached = findExistingNode(uri, getNodesByType(contentNodeType));
     // returns content from that node
     if (cached) {
+      logger('node already created:', uri)
       return cached.parsedContent;
     }
 
     try {
+      logger('will start parsing:', uri);
       parsedContent = await sourceParser(
         source,
         pluginOptions,
@@ -75,6 +86,7 @@ module.exports = async function createResolvers(params, pluginOptions) {
       },
     };
 
+    logger('done parsing, creating node:', uri);
     await createNode(node);
 
     return parsedContent;
