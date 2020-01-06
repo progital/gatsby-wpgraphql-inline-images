@@ -1,4 +1,4 @@
-const sourceParser = require('./sourceParser');
+const { sourceParser } = require('./sourceParser');
 const debugLog = require('./utils').debugLog;
 
 const findExistingNode = (uri, allNodes) =>

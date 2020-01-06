@@ -27,7 +27,46 @@ const getPluginValues = require(`./plugin-values`);
  * sourceParser(source, pluginOptions, params)
  */
 
-module.exports = async function sourceParser(
+function normalizeUrl(url, { uploadsUrl, wordPressUrl }) {
+  if (!url) {
+    return;
+  }
+
+  const urlParsed = new URIParser(url);
+  urlParsed.normalize();
+  url = urlParsed.href();
+
+  // removes protocol to handle mixed content in a page
+  let urlNoProtocol = url.replace(/^https?:/i, '');
+  let uploadsUrlNoProtocol = uploadsUrl.replace(/^https?:/i, '');
+  let uploadsUrlParsed = new URIParser(uploadsUrl);
+  // gets relative uploads url
+  let uploadsUrlRelative = uploadsUrlParsed.path();
+  // handling relative url
+  const isUrlRelative = urlParsed.is('relative');
+
+  // if doesn't match uploads dir
+  if (
+    !(isUrlRelative && url.startsWith(uploadsUrlRelative)) &&
+    !urlNoProtocol.startsWith(uploadsUrlNoProtocol)
+  ) {
+    // bails out of processing
+    return false;
+  }
+
+  if (isUrlRelative) {
+    url = urlParsed.absoluteTo(wordPressUrl).href();
+  }
+
+  if (!urlParsed.protocol() && !isUrlRelative) {
+    urlParsed.protocol(uploadsUrlParsed.protocol() || 'http');
+    url = urlParsed.href();
+  }
+
+  return url;
+}
+
+async function sourceParser(
   { content },
   {
     uploadsUrl,
@@ -66,29 +105,10 @@ module.exports = async function sourceParser(
     let url = item.attribs.href || item.attribs.src;
     let urlKey = url;
 
+    url = normalizeUrl(url, { uploadsUrl, wordPressUrl });
+
     if (!url) {
       return;
-    }
-
-    // removes protocol to handle mixed content in a page
-    let urlNoProtocol = url.replace(/^https?:/i, '');
-    let uploadsUrlNoProtocol = uploadsUrl.replace(/^https?:/i, '');
-    // gets relative uploads url
-    let uploadsUrlRelative = new URIParser(uploadsUrl).path();
-    // handling relative url
-    const urlParsed = new URIParser(url);
-    const isUrlRelative = urlParsed.is('relative');
-
-    // if not relative root url or not matches uploads dir
-    if (
-      !(isUrlRelative && url.startsWith(uploadsUrlRelative)) &&
-      !urlNoProtocol.startsWith(uploadsUrlNoProtocol)
-    ) {
-      return;
-    }
-
-    if (isUrlRelative) {
-      url = urlParsed.absoluteTo(wordPressUrl).href();
     }
 
     if (imageRefs.some(({ url: storedUrl }) => storedUrl === url)) {
@@ -207,4 +227,9 @@ module.exports = async function sourceParser(
   });
 
   return $.html();
+}
+
+module.exports = {
+  sourceParser,
+  normalizeUrl,
 };

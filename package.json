@@ -12,8 +12,8 @@
         "wpgraphql"
     ],
     "repository": {
-      "type" : "git",
-      "url" : "https://github.com/progital/gatsby-wpgraphql-inline-images.git"
+        "type": "git",
+        "url": "https://github.com/progital/gatsby-wpgraphql-inline-images.git"
     },
     "license": "MIT",
     "dependencies": {
@@ -32,6 +32,11 @@
         "urijs": "^1.19.1"
     },
     "devDependencies": {
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.4.0",
+        "babel-jest": "^24.9.0",
+        "babel-plugin-rewire": "^1.2.0",
+        "babel-preset-gatsby": "^0.2.26",
         "cross-env": "^5.1.4",
         "eslint": "^6.0.1",
         "eslint-config-google": "^0.13.0",
@@ -40,7 +45,10 @@
         "eslint-plugin-jsx-a11y": "^6.2.3",
         "eslint-plugin-prettier": "^3.1.0",
         "eslint-plugin-react": "^7.14.2",
-        "prettier": "^1.18.2"
+        "identity-obj-proxy": "^3.0.0",
+        "jest": "^24.9.0",
+        "prettier": "^1.18.2",
+        "react-test-renderer": "^16.12.0"
     },
     "peerDependencies": {
         "gatsby": "^2.13.12",
@@ -48,6 +56,6 @@
         "react-dom": "^16.8.6"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     }
 }
