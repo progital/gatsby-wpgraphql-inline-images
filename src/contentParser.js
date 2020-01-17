@@ -50,6 +50,12 @@ export default function contentParser(
       }
 
       let urlParsed = new URIParser(elementUrl);
+
+      // TODO test if this hash handling is sufficient
+      if (elementUrl === urlParsed.hash()) {
+        return;
+      }
+
       // handling relative url
       const isUrlRelative = urlParsed.is('relative');
 
