@@ -17,7 +17,12 @@ module.exports = async function createResolvers(params, pluginOptions) {
   const {
     actions: { createNode },
   } = params;
-  const { processPostTypes = [], debugOutput = false } = pluginOptions;
+  const {
+    processPostTypes = [],
+    customTypeRegistrations = [],
+    debugOutput = false,
+    keyExtractor = (source, context, info) => source.uri,
+  } = pluginOptions;
 
   const logger = (...args) => {
     args.unshift('>>>');
@@ -29,14 +34,16 @@ module.exports = async function createResolvers(params, pluginOptions) {
   // - saves (caches) the result to a `ParsedWordPressContent` node
   // - repeat request for the same content (determined by uri) returns cached result
   const contentResolver = async (source, args, context, info) => {
-    const { uri } = source;
+    // const { uri, path } = source;
+    let uri = keyExtractor(source, context, info);
     let parsedContent = '';
     logger('Entered contentResolver @', uri || 'URI not defined, skipping');
+    let content = source[info.fieldName];
 
     // uri works as a key for caching/processing functions
     // bails if no uri
     if (!uri) {
-      return source.content;
+      return content;
     }
 
     // if a node with a given URI exists
@@ -57,17 +64,18 @@ module.exports = async function createResolvers(params, pluginOptions) {
       try {
         logger('will start parsing:', uri);
         parsedContent = await sourceParser(
-          source,
+          { content },
           pluginOptions,
           params,
           context
         );
+        return parsedContent;
       } catch (e) {
         console.log(`Failed sourceParser at ${uri}`, e);
-        return source.content;
+        return content;
       }
 
-      logger(`[ORIGINAL CONTENT @ ${uri}]`, source.content);
+      logger(`[ORIGINAL CONTENT @ ${uri}]`, content);
       logger(`[PARSED CONTENT @ ${uri}]`, parsedContent);
 
       let payload = {
@@ -107,6 +115,18 @@ module.exports = async function createResolvers(params, pluginOptions) {
       },
     };
     logger('Registering ', `${pluginOptions.graphqlTypeName}_${element}`);
+
+    createResolvers(params);
+  });
+  customTypeRegistrations.forEach(registration => {
+    let params = {};
+    params[registration.graphqlTypeName] = {
+      [registration.fieldName]: {
+        resolve: contentResolver,
+      },
+    };
+    logger('Registering custom resolver ', registration.graphqlTypeName);
+
     createResolvers(params);
   });
 };

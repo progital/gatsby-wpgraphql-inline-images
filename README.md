@@ -8,7 +8,7 @@ Source plugins don't process links and images in blocks of text (i.e. post conte
 - Replaces `<a>` linking to site's pages with `<Link>` component
 - Replaces `<img>` with Gatsby `<Img>` component leveraging all of the [gatsby-image](https://www.gatsbyjs.org/docs/using-gatsby-image/) rich functionality
 
-A [major update](https://github.com/gatsbyjs/gatsby/issues/19292) is in the works for the WordPress source plugin and WPGraphQL. This plugin will be radically changed or even become redundant after V4 is completed. 
+A [major update](https://github.com/gatsbyjs/gatsby/issues/19292) is in the works for the WordPress source plugin and WPGraphQL. This plugin will be radically changed or even become redundant after V4 is completed.
 
 ### Dependencies
 
@@ -42,6 +42,10 @@ yarn add gatsby-wpgraphql-inline-images
 `wordPressUrl` and `uploadsUrl` contain URLs of the source WordPress site and it's `uploads` folder respectively.
 
 `processPostTypes` determines which post types to process. You can include [custom post types](https://docs.wpgraphql.com/getting-started/custom-post-types) as defined in WPGraphQL.
+
+`customTypeRegistrations` allows additional registration of parsed html content for arbitrary graphql types. For more information, see examples below.
+
+`keyExtractor` a function that extracts the cache key for a specific node, typically this is the `uri` of a post.
 
 `graphqlTypeName` should contain the same `typeName` used in `gatsby-source-graphql` parameters.
 
@@ -149,6 +153,44 @@ and replace `dangerouslySetInnerHTML` with this
 ```
 
 The modified example starter is available at [github.com/progital/gatsby-wpgraphql-blog-example](https://github.com/progital/gatsby-wpgraphql-blog-example).
+
+## Examples of advanced usage
+
+Add this plugin to the `gatsby-config.js`
+
+```javascript
+{
+  resolve: 'gatsby-wpgraphql-inline-images',
+  options: {
+    wordPressUrl: `https://yourdomain.dev/`,
+    uploadsUrl: `https://yourdomain.dev/wp-content/uploads/`,
+    graphqlTypeName: 'WPGraphQL',
+    customTypeRegistrations: [
+      {
+        graphqlTypeName: "WPGraphQL_Page_Acfdemofields",
+        fieldName: "fieldInAcf",
+      },
+    ],
+    keyExtractor: (source, context, info) => source.uri || source.key,
+  },
+},
+```
+
+This example assumes that there is a GraphQL type `WPGraphQL_Page_Acfdemofields` that has a field `fieldInAcf`, e.g.
+
+```
+query MyQuery {
+  wpgraphql {
+    pages {
+      nodes {
+        acfDemoFields {
+          fieldInAcf
+        }
+      }
+    }
+  }
+}
+```
 
 ## How to contribute
 
