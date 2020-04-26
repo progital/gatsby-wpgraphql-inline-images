@@ -1,53 +1,53 @@
 {
-    "name": "gatsby-wpgraphql-inline-images",
-    "description": "A Gatsby plugin to turn remote inline images into local static images",
-    "version": "0.2.5",
-    "main": "index.js",
-    "author": "Andrey Shalashov <andrey@progital.io>",
-    "keywords": [
-        "gatsby",
-        "gatsby-plugin",
-        "image",
-        "wordpress",
-        "wpgraphql"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/progital/gatsby-wpgraphql-inline-images.git"
-    },
-    "license": "MIT",
-    "dependencies": {
-        "@babel/runtime": "^7.0.0",
-        "@emotion/core": "^10.0.14",
-        "@mdx-js/react": "^1.0.27",
-        "cheerio": "^1.0.0-rc.3",
-        "gatsby": "^2.20.25",
-        "gatsby-image": "^2.3.4",
-        "gatsby-plugin-sharp": "^2.5.6",
-        "gatsby-source-filesystem": "^2.2.4",
-        "gatsby-transformer-sharp": "^2.4.6",
-        "html-react-parser": "^0.10.3",
-        "lodash": "^4.17.11",
-        "theme-ui": "^0.3.1",
-        "urijs": "^1.19.1"
-    },
-    "devDependencies": {
-        "cross-env": "^7.0.2",
-        "eslint": "^6.0.1",
-        "eslint-config-google": "^0.14.0",
-        "eslint-config-prettier": "^6.0.0",
-        "eslint-plugin-import": "^2.18.0",
-        "eslint-plugin-jsx-a11y": "^6.2.3",
-        "eslint-plugin-prettier": "^3.1.0",
-        "eslint-plugin-react": "^7.14.2",
-        "prettier": "^2.0.4"
-    },
-    "peerDependencies": {
-        "gatsby": "^2.13.12",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    }
+  "name": "gatsby-wpgraphql-inline-images",
+  "description": "A Gatsby plugin to turn remote inline images into local static images",
+  "version": "0.2.5",
+  "main": "index.js",
+  "author": "Andrey Shalashov <andrey@progital.io>",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "image",
+    "wordpress",
+    "wpgraphql"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/progital/gatsby-wpgraphql-inline-images.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.0.0",
+    "@emotion/core": "^10.0.14",
+    "@mdx-js/react": "^1.0.27",
+    "cheerio": "^1.0.0-rc.3",
+    "gatsby": "^2.20.25",
+    "gatsby-image": "^2.3.4",
+    "gatsby-plugin-sharp": "<=2.4.4",
+    "gatsby-source-filesystem": "^2.2.4",
+    "gatsby-transformer-sharp": "^2.4.6",
+    "html-react-parser": "^0.10.3",
+    "lodash": "^4.17.11",
+    "theme-ui": "^0.3.1",
+    "urijs": "^1.19.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "eslint": "^6.0.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.2",
+    "prettier": "^2.0.4"
+  },
+  "peerDependencies": {
+    "gatsby": "^2.13.12",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
