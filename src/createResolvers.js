@@ -69,7 +69,6 @@ module.exports = async function createResolvers(params, pluginOptions) {
           params,
           context
         );
-        return parsedContent;
       } catch (e) {
         console.log(`Failed sourceParser at ${uri}`, e);
         return content;
@@ -81,13 +80,13 @@ module.exports = async function createResolvers(params, pluginOptions) {
       let payload = {
         parsedContent,
         sourceId: source.id,
-        sourceUri: source.uri,
+        sourceUri: uri,
         sourcePageId: source.pageId,
       };
 
       let node = {
         ...payload,
-        id: createNodeId(source.uri, contentNodeType),
+        id: createNodeId(uri, contentNodeType),
         children: [],
         parent: null,
         internal: {
