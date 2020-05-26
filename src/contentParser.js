@@ -37,18 +37,18 @@ export default function contentParser(
     const subdir = wordPressUrlParsed.path();
     return path.replace(subdir, '/');
   };
-	
-	const getAnchor = (url) => {
-		let anchor = '#' + url.split('#')[1];
-		if (!url.includes('#')) {
-			return;
-		} else {
-			return anchor;
-		}
-	};
+
+  const getAnchor = (url) => {
+    let anchor = '#' + url.split('#')[1];
+    if (!url.includes('#')) {
+      return;
+    } else {
+      return anchor;
+    }
+  };
 
   const parserOptions = {
-    replace: domNode => {
+    replace: (domNode) => {
       let elementUrl =
         (domNode.name === 'a' && domNode.attribs.href) ||
         (domNode.name === 'img' && domNode.attribs.src) ||
@@ -57,8 +57,8 @@ export default function contentParser(
       if (!elementUrl) {
         return;
       }
-			
-			let urlAnchor = getAnchor(elementUrl);
+
+      let urlAnchor = getAnchor(elementUrl);
       let urlParsed = new URIParser(elementUrl);
 
       // TODO test if this hash handling is sufficient
@@ -96,19 +96,19 @@ export default function contentParser(
       ) {
         let url = urlParsed.path();
         url = subdirectoryCorrection(url, wordPressUrl);
-				if (urlAnchor) {
-					return (
-						<Styled.a as={Link} to={url + urlAnchor} className={className}>
-							{domToReact(domNode.children, parserOptions)}
-						</Styled.a>
-					);
-				} else {
-					return (
-						<Styled.a as={Link} to={url} className={className}>
-							{domToReact(domNode.children, parserOptions)}
-						</Styled.a>
-					);
-				}
+        if (urlAnchor) {
+          return (
+            <Styled.a as={Link} to={url + urlAnchor} className={className}>
+              {domToReact(domNode.children, parserOptions)}
+            </Styled.a>
+          );
+        } else {
+          return (
+            <Styled.a as={Link} to={url} className={className}>
+              {domToReact(domNode.children, parserOptions)}
+            </Styled.a>
+          );
+        }
       }
 
       // cleans up internal processing attribute
