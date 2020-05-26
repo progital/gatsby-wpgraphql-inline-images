@@ -48,7 +48,7 @@ export default function contentParser(
   };
 
   const parserOptions = {
-    replace: (domNode) => {
+    replace: domNode => {
       let elementUrl =
         (domNode.name === 'a' && domNode.attribs.href) ||
         (domNode.name === 'img' && domNode.attribs.src) ||
