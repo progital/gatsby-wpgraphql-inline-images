@@ -1,3 +1,6 @@
+> **Warning**
+> This project is outdated and has been archived
+
 # gatsby-wpgraphql-inline-images
 
 ## Description
